@@ -38,6 +38,14 @@ window.addEventListener("load", function () {
   }, 2000); // 2000 milidetik (2 detik)
 });
 
+//audio play
+function audio() {
+  const audio = document.querySelector("#bgAudio");
+  if (audio) {
+    audio.play();
+  }
+}
+
 //dark mode toggle
 const darkToggle = document.querySelector("#dark-toggle");
 const html = document.querySelector("html");
