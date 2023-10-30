@@ -39,12 +39,12 @@ window.addEventListener("load", function () {
 });
 
 //audio play
-function audio() {
-  const audio = document.querySelector("#bgAudio");
-  if (audio) {
-    audio.play();
-  }
-}
+// function audio() {
+//   const audio = document.querySelector("#bgAudio");
+//   if (audio) {
+//     audio.play();
+//   }
+// }
 
 //dark mode toggle
 const darkToggle = document.querySelector("#dark-toggle");
@@ -70,3 +70,47 @@ if (
 } else {
   darkToggle.checked = false;
 }
+
+//audio permission
+function autoplayUnlock(element) {
+  var context = new (window.AudioContext || window.webkitAudioContext)();
+
+  return new Promise(function (resolve, reject) {
+    if (context.state === "suspended") {
+      var unlock = function unlock() {
+        context
+          .resume()
+          .then(function () {
+            window.removeEventListener("keydown", unlock);
+            element.removeEventListener("click", unlock);
+            element.removeEventListener("touchstart", unlock);
+            element.removeEventListener("touchend", unlock);
+
+            resolve();
+          })
+          .catch(function (error) {
+            reject(error);
+          });
+      };
+
+      window.addEventListener("keydown", unlock, false);
+      element.addEventListener("click", unlock, false);
+      element.addEventListener("touchstart", unlock, false);
+      element.addEventListener("touchend", unlock, false);
+    } else {
+      resolve();
+    }
+  });
+}
+
+var autoplayUnlockElement = document.getElementById("autoplay-unlock-overlay");
+var audioElement = document.getElementById("bgAudio");
+
+autoplayUnlock(autoplayUnlockElement)
+  .then(function () {
+    document.body.removeChild(autoplayUnlockElement);
+    audioElement.play();
+  })
+  .catch(function (error) {
+    console.error(error);
+  });
